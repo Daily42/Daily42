@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import Event from './event.entity';
 
 @Entity()
@@ -12,6 +12,6 @@ export default class EventType {
   @Column()
   color: string;
 
-  // @OneToOne(() => Event, (event) => event.type)
-  // event: Event;
+  @OneToMany(() => Event, (event) => event.type)
+  event: Event;
 }

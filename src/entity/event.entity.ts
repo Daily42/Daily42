@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   OneToMany,
   JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 import EventTime from './event-time.entity';
+import EventType from './event-type.entity';
 
 @Entity()
 export default class Event {
@@ -18,6 +20,15 @@ export default class Event {
 
   @Column()
   typeId: number;
+
+  @Column()
+  locationId: string;
+
+  @Column()
+  locationName: string;
+
+  @ManyToOne(() => EventType, (type) => type.event)
+  type: EventType;
 
   @Column()
   context: string;

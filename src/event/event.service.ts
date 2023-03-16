@@ -23,6 +23,7 @@ export class EventService {
   async getAll(): Promise<Event[]> {
     return await this.eventRepo
       .createQueryBuilder('event')
+      .innerJoinAndSelect('event.type', 'eventType')
       .leftJoinAndSelect('event.dates', 'eventTime')
       .getMany();
   }
@@ -30,6 +31,7 @@ export class EventService {
   async getOne(id: number): Promise<Event> {
     const event = await this.eventRepo
       .createQueryBuilder('event')
+      .innerJoinAndSelect('event.type', 'eventType')
       .leftJoinAndSelect('event.dates', 'eventTime')
       .where('event.id = :id', { id })
       .getOne();
