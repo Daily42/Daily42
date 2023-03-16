@@ -24,6 +24,7 @@ export class EventService {
     return await this.eventRepo
       .createQueryBuilder('event')
       .leftJoinAndSelect('event.location', 'loc')
+      .leftJoinAndSelect('loc.parent', 'parentLoc')
       .leftJoinAndSelect('event.type', 'eventType')
       .leftJoinAndSelect('event.dates', 'eventTime')
       .getMany();
@@ -32,7 +33,8 @@ export class EventService {
   async getOne(id: number): Promise<Event> {
     const event = await this.eventRepo
       .createQueryBuilder('event')
-      .leftJoinAndSelect('event.location', 'location')
+      .leftJoinAndSelect('event.location', 'loc')
+      .leftJoinAndSelect('loc.parent', 'parentLoc')
       .leftJoinAndSelect('event.type', 'eventType')
       .leftJoinAndSelect('event.dates', 'eventTime')
       .where('event.id = :id', { id })

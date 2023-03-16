@@ -1,4 +1,4 @@
-import { Column, Entity, OneToOne, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn, ManyToOne } from 'typeorm';
 import Event from './event.entity';
 
 @Entity()
@@ -9,8 +9,11 @@ export default class Location {
   @Column({ nullable: true })
   parentCode: string;
 
-  @OneToOne(() => Location, (loc) => loc.parentCode)
+  @ManyToOne(() => Location, (loc) => loc.children)
   parent: string;
+
+  @OneToMany(() => Location, (loc) => loc.parent)
+  children: string[];
 
   @Column()
   title: string;
