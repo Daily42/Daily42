@@ -4,6 +4,7 @@ import User from './entity/user.entity';
 import Event from './entity/event.entity';
 import EventTime from './entity/event-time.entity';
 import EventType from './entity/event-type.entity';
+import Location from './entity/location-entity';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -16,5 +17,5 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_DATABASE,
   synchronize: true,
   // logging: false,
-  entities: [User, Event, EventTime, EventType],
+  entities: [User, Event, EventTime, EventType, Location],
 });

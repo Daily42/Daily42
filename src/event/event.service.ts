@@ -23,7 +23,8 @@ export class EventService {
   async getAll(): Promise<Event[]> {
     return await this.eventRepo
       .createQueryBuilder('event')
-      .innerJoinAndSelect('event.type', 'eventType')
+      .leftJoinAndSelect('event.location', 'loc')
+      .leftJoinAndSelect('event.type', 'eventType')
       .leftJoinAndSelect('event.dates', 'eventTime')
       .getMany();
   }
@@ -31,7 +32,8 @@ export class EventService {
   async getOne(id: number): Promise<Event> {
     const event = await this.eventRepo
       .createQueryBuilder('event')
-      .innerJoinAndSelect('event.type', 'eventType')
+      .leftJoinAndSelect('event.location', 'location')
+      .leftJoinAndSelect('event.type', 'eventType')
       .leftJoinAndSelect('event.dates', 'eventTime')
       .where('event.id = :id', { id })
       .getOne();
@@ -49,38 +51,29 @@ export class EventService {
   async create(eventData: CreateEventDto) {
     if (eventData.dates == null || eventData.dates.length == 0)
       throw new BadRequestException(`no dates`);
-    const event = new Event();
-    event.title = eventData.title;
-    event.context = eventData.context;
-    event.typeId = eventData.typeId;
+    const event = { ...eventData } as Event;
+    delete event.dates;
     const savedEvent = await this.eventRepo.save(event);
     if (savedEvent == null) throw new InternalServerErrorException();
-
     for (const timeData of eventData.dates) {
-      const time = new EventTime();
-      time.eventId = savedEvent.id;
-      time.startAt = timeData.startAt;
-      time.term = timeData.term;
+      const time = { ...timeData, eventId: savedEvent.id } as EventTime;
       const savedEventTime = await this.eventTimeRepo.save(time);
       if (savedEventTime == null) throw new InternalServerErrorException();
     }
   }
 
   async update(id: number, eventData: UpdateEventDto) {
-    if (eventData.dates == null || eventData.dates.length == 0)
-      throw new BadRequestException(`no dates`);
-    const event = await this.getOne(id);
-    event.title = eventData.title;
-    event.typeId = eventData.typeId;
-    event.context = eventData.context;
+    await this.getOne(id);
+    const event = { ...eventData, id } as Event;
+    delete event.dates;
     const savedEvent = await this.eventRepo.save(event);
     if (savedEvent == null) throw new InternalServerErrorException();
+
+    // date를 수정하지 않았을 경우 기존 date 유지
+    if (eventData.dates == null || eventData.dates.length == 0) return;
     await this.eventTimeRepo.delete({ eventId: id });
     for (const timeData of eventData.dates) {
-      const time = new EventTime();
-      time.eventId = id;
-      time.startAt = timeData.startAt;
-      time.term = timeData.term;
+      const time = { ...timeData, eventId: id } as EventTime;
       const savedEventTime = this.eventTimeRepo.save(time);
       if (savedEventTime == null) throw new InternalServerErrorException();
     }

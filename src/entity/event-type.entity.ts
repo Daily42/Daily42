@@ -13,5 +13,5 @@ export default class EventType {
   color: string;
 
   @OneToMany(() => Event, (event) => event.type)
-  event: Event;
+  event: Event[];
 }

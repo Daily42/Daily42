@@ -4,11 +4,11 @@ import {
   Column,
   CreateDateColumn,
   OneToMany,
-  JoinColumn,
   ManyToOne,
 } from 'typeorm';
 import EventTime from './event-time.entity';
 import EventType from './event-type.entity';
+import Location from './location-entity';
 
 @Entity()
 export default class Event {
@@ -22,19 +22,21 @@ export default class Event {
   typeId: number;
 
   @Column()
-  locationId: string;
+  locationCode: string;
+
+  @ManyToOne(() => Location, (loc) => loc.event, { cascade: false })
+  location: Location;
 
   @Column()
   locationName: string;
 
-  @ManyToOne(() => EventType, (type) => type.event)
+  @ManyToOne(() => EventType, (type) => type.event, { cascade: false })
   type: EventType;
 
   @Column()
   context: string;
 
-  @OneToMany(() => EventTime, (time) => time.event)
-  @JoinColumn()
+  @OneToMany(() => EventTime, (time) => time.event, { cascade: false })
   dates: EventTime[];
 
   @CreateDateColumn()

@@ -12,6 +12,12 @@ export class CreateEventDto {
   @IsString()
   readonly context: string;
 
+  @IsString()
+  readonly locationCode: string;
+
+  @IsString()
+  readonly locationName?: string;
+
   @ValidateNested({ each: true })
   @Type(() => CreateEventTimeDto)
   readonly dates: CreateEventTimeDto[];

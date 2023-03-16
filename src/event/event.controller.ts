@@ -8,7 +8,6 @@ import {
   Body,
 } from '@nestjs/common';
 import { EventService } from './event.service';
-import Event from '../entity/event.entity';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 
@@ -22,8 +21,8 @@ export class EventController {
   }
 
   @Get(':id')
-  async getOne(@Param('id') eventId: number): Promise<Event> {
-    return await this.eventService.getOne(eventId);
+  getOne(@Param('id') eventId: number) {
+    return this.eventService.getOne(eventId);
   }
 
   @Post()
