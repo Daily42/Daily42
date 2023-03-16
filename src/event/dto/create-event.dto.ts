@@ -1,15 +1,18 @@
 import { Type } from 'class-transformer';
-import { IsString, ValidateNested } from 'class-validator';
-import { EventTime } from '../entity/event-time.entity';
+import { IsNumber, IsString, ValidateNested } from 'class-validator';
+import { CreateEventTimeDto } from './create-event-time.dto';
 
 export class CreateEventDto {
   @IsString()
   readonly title: string;
 
+  @IsNumber()
+  readonly typeId: number;
+
   @IsString()
   readonly context: string;
 
   @ValidateNested({ each: true })
-  @Type(() => EventTime)
-  readonly dates: EventTime[];
+  @Type(() => CreateEventTimeDto)
+  readonly dates: CreateEventTimeDto[];
 }
