@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { AppDataSource } from '../database';
 import Location from '../entity/location-entity';
@@ -15,11 +15,14 @@ export class LocationService {
   }
 
   async getOne(code: string) {
-    return await this.locationRepo
+    const loc = await this.locationRepo
       .createQueryBuilder('loc')
       .leftJoinAndSelect('loc.parent', 'parentLoc')
       .where('loc.code = :code', { code })
       .getOne();
+    if (loc == null)
+      throw new NotFoundException(`Location with CODE ${code} not found.`);
+    return loc;
   }
 
   async getChildren(parentCode: string) {
