@@ -1,13 +1,15 @@
+SET foreign_key_checks = 0; 
+
 delete from event_type;
 insert into event_type(id, title, color) values
-(1, "42", "FF0000")
-,(2, "동아리", "00FF00")
-,(3, "또 머 있었지", "0000FF")
+(1, "42seoul_official", "FF0000")
+,(2, "study group", "00FF00")
+,(3, "club(동아리)", "00FFFF")
+,(4, "hackerthon & conference", "FF00FF")
+,(5, "etc", "FFFF00")
 ;
 
-SET foreign_key_checks = 0; 
 delete from location;
-SET foreign_key_checks = 1; 
 insert into location(code, parentCode, title, sort) values
 ("PL0000", null, "개포 클러스터", 1)
 ,("PL0100", null, "서초 클러스터", 2)
@@ -28,3 +30,5 @@ insert into location(code, parentCode, title, sort) values
 ,("PL0014", "PL0000", "1층 게임장", 14)
 ,("PL0015", "PL0000", "1층 42Lab", 15)
 ;
+
+SET foreign_key_checks = 1; 
