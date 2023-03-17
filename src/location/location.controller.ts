@@ -10,6 +10,11 @@ export class LocationController {
     return this.locationService.getAll();
   }
 
+  @Get('/root')
+  getRoot() {
+    return this.locationService.getRoot();
+  }
+
   @Get('/:code')
   getOne(@Param('code') code: string) {
     return this.locationService.getOne(code);

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { AppDataSource } from '../database';
 import Location from '../entity/location-entity';
 
@@ -12,6 +12,10 @@ export class LocationService {
 
   async getAll() {
     return await this.locationRepo.find();
+  }
+
+  async getRoot() {
+    return await this.locationRepo.find({ where: { parentCode: IsNull() } });
   }
 
   async getOne(code: string) {
