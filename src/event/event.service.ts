@@ -7,17 +7,23 @@ import {
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { AppDataSource } from '../database';
-import Event from '../entity/event.entity';
 import { Repository } from 'typeorm';
+import Event from '../entity/event.entity';
 import EventTime from 'src/entity/event-time.entity';
+import EventType from 'src/entity/event-type.entity';
+import Location from '../entity/location-entity';
 
 @Injectable()
 export class EventService {
   private eventRepo: Repository<Event>;
   private eventTimeRepo: Repository<EventTime>;
+  private eventTypeRepo: Repository<EventType>;
+  private locationRepo: Repository<Location>;
   constructor() {
     this.eventRepo = AppDataSource.getRepository(Event);
     this.eventTimeRepo = AppDataSource.getRepository(EventTime);
+    this.eventTypeRepo = AppDataSource.getRepository(EventType);
+    this.locationRepo = AppDataSource.getRepository(Location);
   }
 
   async getAll(): Promise<Event[]> {
@@ -51,6 +57,8 @@ export class EventService {
   }
 
   async create(eventData: CreateEventDto) {
+    await this.checkEventType(eventData.typeId);
+    await this.checkEventLocation(eventData.locationCode);
     if (eventData.dates == null || eventData.dates.length == 0)
       throw new BadRequestException(`no dates`);
     const event = { ...eventData } as Event;
@@ -65,6 +73,9 @@ export class EventService {
   }
 
   async update(id: number, eventData: UpdateEventDto) {
+    if (eventData.typeId != null) await this.checkEventType(eventData.typeId);
+    if (eventData.locationCode != null)
+      await this.checkEventLocation(eventData.locationCode);
     await this.getOne(id);
     const event = { ...eventData, id } as Event;
     delete event.dates;
@@ -79,5 +90,21 @@ export class EventService {
       const savedEventTime = this.eventTimeRepo.save(time);
       if (savedEventTime == null) throw new InternalServerErrorException();
     }
+  }
+
+  async checkEventType(id: number) {
+    const type = await this.eventTypeRepo.findOne({
+      where: { id },
+    });
+    if (type == null)
+      throw new BadRequestException(`typeId ${id} is not available`);
+  }
+
+  async checkEventLocation(code: string) {
+    const loc = await this.locationRepo.findOne({
+      where: { code },
+    });
+    if (loc == null)
+      throw new BadRequestException(`locationCode ${code} is not available`);
   }
 }
