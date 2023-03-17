@@ -16,6 +16,7 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
   synchronize: true,
+  timezone: 'Asia/Seoul',
   // logging: false,
   entities: [User, Event, EventTime, EventType, Location],
 });

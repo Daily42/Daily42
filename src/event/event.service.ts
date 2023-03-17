@@ -12,6 +12,7 @@ import Event from '../entity/event.entity';
 import EventTime from 'src/entity/event-time.entity';
 import EventType from 'src/entity/event-type.entity';
 import Location from '../entity/location-entity';
+import { SearchEventDto } from './dto/search-event.dto';
 
 @Injectable()
 export class EventService {
@@ -26,14 +27,48 @@ export class EventService {
     this.locationRepo = AppDataSource.getRepository(Location);
   }
 
-  async getAll(): Promise<Event[]> {
-    return await this.eventRepo
+  async getAll(search: SearchEventDto): Promise<Event[]> {
+    const query = this.eventRepo
       .createQueryBuilder('event')
       .leftJoinAndSelect('event.location', 'loc')
       .leftJoinAndSelect('loc.parent', 'parentLoc')
       .leftJoinAndSelect('event.type', 'eventType')
-      .leftJoinAndSelect('event.dates', 'eventTime')
-      .getMany();
+      .leftJoinAndSelect('event.dates', 'eventTime');
+    query.where('1=1');
+    if (search.context != null) {
+      query.andWhere('event.context like :context', {
+        context: `%${search.context}%`,
+      });
+    }
+    if (search.date != null) {
+      query.andWhere(
+        'eventTime.startAt between date(:startOfDay) and date_add(date(:startOfDay), interval 1 day)',
+        {
+          startOfDay: new Date(search.date),
+        },
+      );
+    }
+    if (search.locationCode != null) {
+      query.andWhere('event.locationCode = :code', {
+        code: search.locationCode,
+      });
+    }
+    if (search.locationName != null) {
+      query.andWhere('event.locationName like :name', {
+        name: `%${search.locationName}%`,
+      });
+    }
+    if (search.title != null) {
+      query.andWhere('event.title like :title', {
+        title: `%${search.title}%`,
+      });
+    }
+    if (search.typeId != null) {
+      query.andWhere('event.typeId = :typeId', {
+        typeId: search.typeId,
+      });
+    }
+    return await query.getMany();
   }
 
   async getOne(id: number): Promise<Event> {
