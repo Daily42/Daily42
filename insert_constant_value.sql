@@ -5,7 +5,9 @@ insert into event_type(id, title, color) values
 ,(3, "또 머 있었지", "0000FF")
 ;
 
+SET foreign_key_checks = 0; 
 delete from location;
+SET foreign_key_checks = 1; 
 insert into location(code, parentCode, title, sort) values
 ("PL0000", null, "개포 클러스터", 1)
 ,("PL0100", null, "서초 클러스터", 2)
