@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   OneToMany,
   ManyToOne,
+  UpdateDateColumn,
 } from 'typeorm';
 import EventTime from './event-time.entity';
 import EventType from './event-type.entity';
@@ -39,6 +40,15 @@ export default class Event {
   @OneToMany(() => EventTime, (time) => time.event, { cascade: false })
   dates: EventTime[];
 
+  @Column({ default: null })
+  authorId: number;
+
+  @Column({ default: null })
+  updaterId: number;
+
   @CreateDateColumn()
   createAt: Date;
+
+  @UpdateDateColumn()
+  updateAt: Date;
 }

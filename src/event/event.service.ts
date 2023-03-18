@@ -1,18 +1,20 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { AppDataSource } from '../database';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
-import { AppDataSource } from '../database';
-import { Repository } from 'typeorm';
-import Event from '../entity/event.entity';
-import EventTime from 'src/entity/event-time.entity';
-import EventType from 'src/entity/event-type.entity';
-import Location from '../entity/location-entity';
 import { SearchEventDto } from './dto/search-event.dto';
+import Event from '../entity/event.entity';
+import EventTime from '../entity/event-time.entity';
+import EventType from '../entity/event-type.entity';
+import Location from '../entity/location-entity';
+import User from '../entity/user.entity';
 
 @Injectable()
 export class EventService {
@@ -84,18 +86,20 @@ export class EventService {
     return event;
   }
 
-  async deleteOne(id: number) {
-    await this.getOne(id);
+  async deleteOne(author: User, id: number) {
+    const dbevent = await this.getOne(id);
+    await this.checkAuth(author, dbevent);
     await this.eventRepo.query('delete from event_time where eventId=?', [id]);
     await this.eventRepo.query('delete from event where id=?', [id]);
   }
 
-  async create(eventData: CreateEventDto) {
+  async create(author: User, eventData: CreateEventDto) {
     await this.checkEventType(eventData.typeId);
     await this.checkEventLocation(eventData.locationCode);
     if (eventData.dates == null || eventData.dates.length == 0)
       throw new BadRequestException(`no dates`);
     const event = { ...eventData } as Event;
+    event.authorId = author.id;
     delete event.dates;
     const savedEvent = await this.eventRepo.save(event);
     if (savedEvent == null) throw new InternalServerErrorException();
@@ -106,12 +110,14 @@ export class EventService {
     }
   }
 
-  async update(id: number, eventData: UpdateEventDto) {
+  async update(author: User, id: number, eventData: UpdateEventDto) {
     if (eventData.typeId != null) await this.checkEventType(eventData.typeId);
     if (eventData.locationCode != null)
       await this.checkEventLocation(eventData.locationCode);
-    await this.getOne(id);
+    const dbevent = await this.getOne(id);
+    await this.checkAuth(author, dbevent);
     const event = { ...eventData, id } as Event;
+    event.updaterId = author.id;
     delete event.dates;
     const savedEvent = await this.eventRepo.save(event);
     if (savedEvent == null) throw new InternalServerErrorException();
@@ -140,5 +146,11 @@ export class EventService {
     });
     if (loc == null)
       throw new BadRequestException(`locationCode ${code} is not available`);
+  }
+
+  async checkAuth(user: User, event: Event) {
+    if (user.isAdmin) return;
+    if (event.authorId == user.id) return;
+    throw new ForbiddenException();
   }
 }

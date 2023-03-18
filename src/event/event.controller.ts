@@ -8,6 +8,7 @@ import {
   Patch,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { EventService } from './event.service';
 import { CreateEventDto } from './dto/create-event.dto';
@@ -31,17 +32,21 @@ export class EventController {
   }
 
   @Post()
-  create(@Body() eventData: CreateEventDto) {
-    return this.eventService.create(eventData);
+  create(@Req() req, @Body() eventData: CreateEventDto) {
+    return this.eventService.create(req.session.user, eventData);
   }
 
   @Patch(':id')
-  patch(@Param('id') eventId: number, @Body() eventData: UpdateEventDto) {
-    return this.eventService.update(eventId, eventData);
+  patch(
+    @Req() req,
+    @Param('id') eventId: number,
+    @Body() eventData: UpdateEventDto,
+  ) {
+    return this.eventService.update(req.session.user, eventId, eventData);
   }
 
   @Delete(':id')
-  del(@Param('id') eventId: number) {
-    return this.eventService.deleteOne(eventId);
+  del(@Req() req, @Param('id') eventId: number) {
+    return this.eventService.deleteOne(req.session.user, eventId);
   }
 }
