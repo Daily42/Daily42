@@ -52,7 +52,24 @@ export class EventService {
       );
     }
     if (search.locationCode != null) {
-      query.andWhere('event.locationCode = :locationCode', search);
+      query.andWhere(
+        `event.locationCode in (
+        WITH RECURSIVE cte AS (
+          SELECT code, parentCode, title, sort
+          FROM location
+          WHERE code = :locationCode
+        
+          UNION ALL
+        
+          SELECT l.code, l.parentCode, l.title, l.sort
+          FROM location l
+          JOIN cte ON l.parentCode = cte.code
+        )
+        SELECT code
+        FROM cte
+      )`,
+        search,
+      );
     }
     if (search.locationName != null) {
       query.andWhere('event.locationName like :name', {
