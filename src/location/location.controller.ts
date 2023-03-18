@@ -1,7 +1,9 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { AuthGuard } from 'src/auth/auth-guard';
 import { LocationService } from './location.service';
 
 @Controller('locations')
+@UseGuards(AuthGuard)
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}
 

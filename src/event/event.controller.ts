@@ -7,13 +7,16 @@ import {
   Body,
   Patch,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { EventService } from './event.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { SearchEventDto } from './dto/search-event.dto';
+import { AuthGuard } from 'src/auth/auth-guard';
 
 @Controller('events')
+@UseGuards(AuthGuard)
 export class EventController {
   constructor(private readonly eventService: EventService) {}
 

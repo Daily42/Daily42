@@ -4,7 +4,7 @@ import { AuthController } from './auth.controller';
 import { FTStrategy } from './strategy/ft.strategy';
 
 @Module({
-  imports: [PassportModule],
+  imports: [PassportModule.register({ session: true })],
   controllers: [AuthController],
   providers: [FTStrategy],
 })

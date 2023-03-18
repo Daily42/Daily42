@@ -29,6 +29,6 @@ export class AuthController {
   @UseGuards(AuthGuard('42'))
   fortyTwoLoginCallback(@Req() req, @Res() res) {
     req.session.user = req.user;
-    res.redirect('/');
+    res.redirect('/auth/me');
   }
 }
