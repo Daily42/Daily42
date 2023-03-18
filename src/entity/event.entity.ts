@@ -15,7 +15,7 @@ export default class Event {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 100 })
   title: string;
 
   @Column()
@@ -27,7 +27,7 @@ export default class Event {
   @ManyToOne(() => Location, (loc) => loc.event, { cascade: false })
   location: Location;
 
-  @Column()
+  @Column({ length: 100 })
   locationName: string;
 
   @ManyToOne(() => EventType, (type) => type.event, { cascade: false })
