@@ -16,6 +16,9 @@ export default class User {
   @Column({ unique: true })
   email: string;
 
+  @Column({ default: false })
+  isAdmin: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 }

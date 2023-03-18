@@ -7,11 +7,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from './auth.service';
 import { FTStrategy } from './strategy/ft.strategy';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly fortyTwoStrategy: FTStrategy) {}
+  constructor(
+    private readonly fortyTwoStrategy: FTStrategy,
+    private readonly authService: AuthService,
+  ) {}
 
   @Get('me')
   me(@Req() req) {
@@ -27,8 +31,8 @@ export class AuthController {
 
   @Get('42/callback')
   @UseGuards(AuthGuard('42'))
-  fortyTwoLoginCallback(@Req() req, @Res() res) {
-    req.session.user = req.user;
+  async fortyTwoLoginCallback(@Req() req, @Res() res) {
+    req.session.user = await this.authService.login(req.user);
     res.redirect('/auth/me');
   }
 }
