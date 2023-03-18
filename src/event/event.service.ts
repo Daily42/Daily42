@@ -40,18 +40,17 @@ export class EventService {
         context: `%${search.context}%`,
       });
     }
-    if (search.date != null) {
+    if (search.startDate != null) {
+      query.andWhere('eventTime.startAt > :startDate', search);
+    }
+    if (search.endDate != null) {
       query.andWhere(
-        'eventTime.startAt between date(:startOfDay) and date_add(date(:startOfDay), interval 1 day)',
-        {
-          startOfDay: new Date(search.date),
-        },
+        'eventTime.startAt < date_add(date(:endDate), interval 1 day)',
+        search,
       );
     }
     if (search.locationCode != null) {
-      query.andWhere('event.locationCode = :code', {
-        code: search.locationCode,
-      });
+      query.andWhere('event.locationCode = :locationCode', search);
     }
     if (search.locationName != null) {
       query.andWhere('event.locationName like :name', {
@@ -64,10 +63,10 @@ export class EventService {
       });
     }
     if (search.typeId != null) {
-      query.andWhere('event.typeId = :typeId', {
-        typeId: search.typeId,
-      });
+      query.andWhere('event.typeId = :typeId', search);
     }
+    query.orderBy('event.locationCode');
+    query.orderBy('eventTime.startAt');
     return await query.getMany();
   }
 

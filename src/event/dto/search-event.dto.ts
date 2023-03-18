@@ -1,13 +1,13 @@
-import { IsDateString, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class SearchEventDto {
   @IsString()
   @IsOptional()
   readonly title?: string;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  readonly typeId?: number;
+  readonly typeId?: string;
 
   @IsString()
   @IsOptional()
@@ -23,5 +23,9 @@ export class SearchEventDto {
 
   @IsDateString()
   @IsOptional()
-  readonly date?: Date;
+  readonly startDate?: Date;
+
+  @IsDateString()
+  @IsOptional()
+  readonly endDate?: Date;
 }
