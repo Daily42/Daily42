@@ -6,7 +6,6 @@ import User from '../entity/user.entity';
 @Injectable()
 export class AuthGuard extends PassportAuthGuard('session') {
   async canActivate(context) {
-    // TODO: await 로 바꾸기
     const request = context.switchToHttp().getRequest();
     if (request.session.user == null && process.env.DEBUG_INTRA_ID)
       request.session.user = await AppDataSource.getRepository(User).findOne({
