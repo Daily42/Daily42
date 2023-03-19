@@ -34,7 +34,7 @@ export default class Event {
   @ManyToOne(() => EventType, (type) => type.event, { cascade: false })
   type: EventType;
 
-  @Column()
+  @Column({ type: 'text' })
   context: string;
 
   @OneToMany(() => EventTime, (time) => time.event, { cascade: false })
