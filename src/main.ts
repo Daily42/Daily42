@@ -10,14 +10,7 @@ import * as passport from 'passport';
 async function bootstrap() {
   dotenv.config();
   await AppDataSource.initialize();
-  const app = await NestFactory.create(AppModule, {
-    cors: {
-      origin: process.env.CLIENT_URL,
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-      allowedHeaders: 'Content-Type, Accept',
-      credentials: true,
-    },
-  });
+  const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
   app.use(
     session({
@@ -28,6 +21,12 @@ async function bootstrap() {
   );
   app.use(passport.initialize());
   app.use(passport.session());
+  app.enableCors({
+    origin: process.env.CLIENT_URL,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: '*',
+    credentials: true,
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
