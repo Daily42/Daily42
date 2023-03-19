@@ -35,6 +35,8 @@ export class AuthController {
   @UseGuards(AuthGuard('42'))
   async fortyTwoLoginCallback(@Req() req, @Res() res) {
     req.session.user = await this.authService.login(req.user);
+    console.log('>> ', req.session, req.cookies);
+
     res.redirect(req.session.redirectUrl ?? '/auth/me');
   }
 }

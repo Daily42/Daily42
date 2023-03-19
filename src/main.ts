@@ -17,6 +17,7 @@ async function bootstrap() {
       credentials: true,
     },
   });
+  app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -31,7 +32,10 @@ async function bootstrap() {
       saveUninitialized: false,
     }),
   );
-  app.use(cookieParser());
+  app.use((req, res, next) => {
+    console.log(req.session, req.cookies);
+    next();
+  });
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
