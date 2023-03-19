@@ -21,12 +21,21 @@ async function bootstrap() {
   );
   app.use(passport.initialize());
   app.use(passport.session());
-  app.enableCors({
-    origin: process.env.CLIENT_URL,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: '*',
+  const cors = {
+    origin: [process.env.CLIENT_URL, '*'],
+    methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
     credentials: true,
-  });
+    allowedHeaders: ['Accept', 'Content-Type', 'Authorization'],
+  };
+  app.enableCors(cors);
+  // app.enableCors({
+  //   origin: process.env.CLIENT_URL,
+  //   methods: ['GET', 'PATCH', 'POST', 'DELETE'],
+  //   allowedHeaders: 'Content-Type, Accept',
+  //   credentials: true,
+  // });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
