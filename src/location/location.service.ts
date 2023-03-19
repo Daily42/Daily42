@@ -11,7 +11,7 @@ export class LocationService {
   }
 
   async getAll() {
-    return await this.locationRepo.find();
+    return await this.locationRepo.find({ order: { sort: 'ASC' } });
   }
 
   async getRoot() {
