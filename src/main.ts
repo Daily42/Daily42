@@ -22,7 +22,12 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
   const cors = {
-    origin: [process.env.CLIENT_URL, '*'],
+    origin: [
+      process.env.CLIENT_URL,
+      'http://localhost:8001',
+      'http://localhost:3030',
+      '*',
+    ],
     methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS',
     preflightContinue: false,
     optionsSuccessStatus: 204,
