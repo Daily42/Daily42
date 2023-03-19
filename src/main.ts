@@ -5,6 +5,7 @@ import { AppDataSource } from './database';
 import * as dotenv from 'dotenv';
 import * as session from 'express-session';
 import * as cookieParser from 'cookie-parser';
+import * as passport from 'passport';
 
 async function bootstrap() {
   dotenv.config();
@@ -18,18 +19,20 @@ async function bootstrap() {
     },
   });
   app.use(cookieParser());
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
   app.use(
     session({
       secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
+    }),
+  );
+  app.use(passport.initialize());
+  app.use(passport.session());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
   app.use((req, res, next) => {
